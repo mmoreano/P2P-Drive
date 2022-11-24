@@ -1,0 +1,42 @@
+package routes
+
+import (
+	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"io"
+	"log"
+	"net/http"
+	"zendx.io/P2P-Drive/models"
+)
+
+var GlobalClient *http.Client
+
+func SwarmPeers(context *gin.Context) {
+
+	var swarmResponse models.SwarmPeersResponse
+	endpoint := "http://127.0.0.1:5001/api/v0/swarm/peers"
+
+	//Create the request
+	req, err := http.NewRequest(http.MethodPost, endpoint, nil)
+	if err != nil {
+		log.Fatalf("Error Occurred. %+v", err)
+	}
+
+	//Send the request
+	response, err := GlobalClient.Do(req)
+	if err != nil {
+		log.Fatalf("Error sending request to API endpoint. %+v", err)
+	}
+
+	//Read body from request
+	body, err := io.ReadAll(response.Body)
+	// b, err := ioutil.ReadAll(resp.Body)  Go.1.15 and earlier
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	//Turn json from body into predefined struct
+	json.Unmarshal(body, &swarmResponse)
+
+	context.IndentedJSON(http.StatusOK, swarmResponse)
+}
