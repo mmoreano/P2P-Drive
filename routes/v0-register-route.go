@@ -12,36 +12,34 @@ var user models.RegisterRequest
 //-------------------------- Register User --------------------------\\
 
 func UserRegister(c *fiber.Ctx) error {
-	//Creating connection to DB
+
+	json.Unmarshal(c.Body(), &user)
+
+	//fmt.Print(user)
+
+	//return c.JSON(user)
+
 	Database := Connection()
-
-	//Getting form data from query Params
-
-	user.Username = c.Query("username")
-	user.UserPassword = c.Query("password")
-	user.Number = c.Query("number")
-	user.Email = c.Query("email")
-	user.FirstName = c.Query("firstname")
-	user.LastName = c.Query("lastname")
-
-	fmt.Println(user.Username)
-
-	//Checking for existing user
 
 	val := Database.DBemailCheck(user.Email)
 
-	// If user exists, return error
-	if val == "Not Found" {
-		Database.DBregister(user.UserPassword, user.Username, user.Email, user.Number, user.FirstName, user.LastName)
+	fmt.Print(val)
 
-		jsonUser, err := json.Marshal(user)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println(jsonUser)
-		fmt.Println(string(jsonUser))
-		Database.CloseClientDB()
-		return c.SendString(string(jsonUser))
+	if val == "Not Found" {
+		Database.DBregister(user.Username, user.UserPassword, user.Number,
+			user.Email, user.FirstName, user.LastName)
+
+		return c.JSON(user)
+
+		//u, err := json.Marshal(user)
+
+		//if err != nil {
+		//	panic(err)
+		//}
+		//fmt.Println(u)
+		//fmt.Println(string(u))
+		//return c.SendString(string(u))
+
 	} else {
 		return c.SendString("Account with email exists")
 	}
