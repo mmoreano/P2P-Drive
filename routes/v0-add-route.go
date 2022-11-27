@@ -31,7 +31,7 @@ var ipfs string = "https://ipfs.io/ipfs/"
 var request models.AddRequest
 var response models.AddResponse
 
-//-------------------------- Add File to IPFS function --------------------------\\
+// -------------------------- Add File to IPFS function --------------------------\\
 
 func Add(c *fiber.Ctx) error {
 

@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-//------------------------- Get File Status --------------------------\\
+// ------------------------- Get File Status --------------------------\\
 
 func Get(c *fiber.Ctx) error {
 	//Fetching query params

@@ -9,7 +9,7 @@ import (
 
 var user models.RegisterRequest
 
-//-------------------------- Register User --------------------------\\
+// -------------------------- Register User --------------------------\\
 
 func UserRegister(c *fiber.Ctx) error {
 

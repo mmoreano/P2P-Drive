@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	log.Print("Starting API...")
+	log.Print("Starting...")
 	api := fiber.New()
 	setup.LaunchEndpoints(api)
 	api.Listen(":8083")
