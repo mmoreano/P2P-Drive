@@ -15,5 +15,6 @@ func main() {
 	api := fiber.New()
 	setup.LaunchEndpoints(api)
 	api.Listen(":8083")
-
+	//test := routes.Connection().GetUserFiles("dom@hotmail.com")
+	//fmt.Println(test)
 }

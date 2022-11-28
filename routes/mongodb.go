@@ -81,17 +81,19 @@ func (connection *MongoDb) DBemailCheck(email string) string {
 
 func (connection *MongoDb) GetUserFiles(owner string) []models.AddResponse {
 	var files []models.AddResponse
-	counter := 0
 	db := connection.Client.Database("P2P")
 	coll := db.Collection("User_Files")
 
 	fmt.Println("Retreiving information...")
 
 	filter := bson.M{"Owner": owner}
+	fmt.Println("Retreiving information...")
 	i, err := coll.Find(context.TODO(), filter)
 	if err != nil {
 		return []models.AddResponse{}
 	}
+
+	fmt.Println("Retreiving information...")
 
 	for i.Next(context.TODO()) {
 		var result models.AddResponse
@@ -99,8 +101,8 @@ func (connection *MongoDb) GetUserFiles(owner string) []models.AddResponse {
 		if err := i.Decode(&result); err != nil {
 			panic(err)
 		}
-		files[counter] = result
-		counter++
+		files = append(files, result)
+
 	}
 	fmt.Println("Successfully Retrieved")
 	return files

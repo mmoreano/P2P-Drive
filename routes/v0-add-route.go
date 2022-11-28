@@ -82,7 +82,7 @@ func Add(c *fiber.Ctx) error {
 	json.Unmarshal(body, &response)
 
 	//creating IPFS link for later use
-	data := ipfs + response.Hash
+	data := ipfs + response.Hash + "/"
 
 	fmt.Println(data)
 	fmt.Println(string(body))

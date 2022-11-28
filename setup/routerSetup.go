@@ -10,11 +10,13 @@ import (
 )
 
 // -------------------------- API Endpoints --------------------------\\
+
 func LaunchEndpoints(api *fiber.App) {
 	api.Use(recover.New())
 	api.Use(cors.New())
 	api.Post("/fileAdd", routes.Add)
 	api.Get("/get", routes.Get)
+	api.Get("/userFiles", routes.UserFiles)
 	api.Post("/userRegister", routes.UserRegister)
 	api.Get("/swagger/*", swagger.HandlerDefault)
 }
