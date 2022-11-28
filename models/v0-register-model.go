@@ -1,6 +1,8 @@
 package models
 
 // need to fix the names for the user login models etc
+
+// RegisterRequest example
 type RegisterRequest struct {
 	Username     string `json:"Username"  binding:"required"`
 	UserPassword string `json:"UserPassword"  binding:"required"`
@@ -9,6 +11,8 @@ type RegisterRequest struct {
 	FirstName    string `json:"FirstName"  binding:"required"`
 	LastName     string `json:"LastName"  binding:"required"`
 }
+
+// RegisterResponse example
 
 type RegisterResponse struct {
 	Status string `json: "status"`

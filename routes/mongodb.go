@@ -17,6 +17,7 @@ type MongoDb struct {
 }
 
 // -------------------------- Establish DB Connection/Client --------------------------\\
+
 func Connection() *MongoDb {
 	url := "mongodb+srv://admin:DOM123@domsdb.agpuaxn.mongodb.net/?retryWrites=true&w=majority"
 	//url := "mongodb+srv://" + os.Getenv("USER") + os.Getenv("PASS") + "@domsdb.agpuaxn.mongodb.net/?retryWrites=true&w=majority"

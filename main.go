@@ -1,14 +1,16 @@
 package main
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v2"
+	_ "github.com/gofiber/swagger"
+	"log"
+	_ "zendx.io/P2P-Drive/docs"
 	"zendx.io/P2P-Drive/setup"
 )
 
-func main() {
+// View Documentation @ http://0.0.0.0:8083/swagger/index.html#/
 
+func main() {
 	log.Print("Starting...")
 	api := fiber.New()
 	setup.LaunchEndpoints(api)

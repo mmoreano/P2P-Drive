@@ -1,0 +1,58 @@
+basePath: /
+info:
+  description: This is a sample server Account server.
+  title: Account
+  version: 1.0.0
+
+definitions:
+    model.AddRequest:
+      properties:
+        id:
+          example: 1
+          format: int64
+          type: integer
+        name:
+          example: account name
+          type: string
+        uuid:
+          example: 550e8400-e29b-41d4-a716-446655440000
+          format: uuid
+          type: string
+      type: object
+
+paths:
+    post:
+      consumes:
+        - application/json
+      description: add by json account
+      parameters:
+        - description: Add account
+          in: body
+          name: account
+          required: true
+          schema:
+            $ref: '#/definitions/model.AddRequest'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AddResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Add an account
+      tags:
+        - accounts
+
+swagger: "2.0"
