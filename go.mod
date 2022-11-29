@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/gofiber/fiber/v2 v2.40.1
 	github.com/gofiber/swagger v0.1.7
+	github.com/google/uuid v1.3.0
 	github.com/swaggo/swag v1.8.8
 	go.mongodb.org/mongo-driver v1.11.0
 )

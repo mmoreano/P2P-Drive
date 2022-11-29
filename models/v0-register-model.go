@@ -10,6 +10,7 @@ type RegisterRequest struct {
 	Email        string `json:"Email"  binding:"required"`
 	FirstName    string `json:"FirstName"  binding:"required"`
 	LastName     string `json:"LastName"  binding:"required"`
+	Token        string `json:"Token"`
 }
 
 // RegisterResponse example

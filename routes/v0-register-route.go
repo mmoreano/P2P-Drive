@@ -1,46 +1,47 @@
 package routes
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
 	"encoding/json"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	models "zendx.io/P2P-Drive/models"
 )
 
-var user models.RegisterRequest
+var userRegister models.RegisterRequest
 
 // -------------------------- Register User --------------------------\\
 
 func UserRegister(c *fiber.Ctx) error {
 
-	json.Unmarshal(c.Body(), &user)
+	json.Unmarshal(c.Body(), &userRegister)
 
-	//fmt.Print(user)
+	//fmt.Print(uuid.New().String()[:31])
 
 	//return c.JSON(user)
 
 	Database := Connection()
 
-	val := Database.DBemailCheck(user.Email)
+	val := Database.DBemailCheck(userRegister.Email)
 
-	fmt.Print(val)
+	userRegister.Token = uuid.New().String()
+
+	userRegister.UserPassword = string(encrypt([]byte(userRegister.Username+userRegister.UserPassword), userRegister.Token[:32]))
 
 	if val == "Not Found" {
-		Database.DBregister(user.Username, user.UserPassword, user.Number,
-			user.Email, user.FirstName, user.LastName)
-
-		return c.JSON(user)
-
-		//u, err := json.Marshal(user)
-
-		//if err != nil {
-		//	panic(err)
-		//}
-		//fmt.Println(u)
-		//fmt.Println(string(u))
-		//return c.SendString(string(u))
+		Database.DBregister(&userRegister)
+		return c.JSON(userRegister)
 
 	} else {
 		return c.SendString("Account with email exists")
 	}
+}
+
+func encrypt(data []byte, password string) []byte {
+	block, _ := aes.NewCipher([]byte(password))
+	gcm, _ := cipher.NewGCM(block)
+	nonce := make([]byte, gcm.NonceSize())
+	ciphertext := gcm.Seal(nonce, nonce, data, nil)
+	return ciphertext
 }

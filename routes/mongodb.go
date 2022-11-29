@@ -36,11 +36,11 @@ func Connection() *MongoDb {
 
 //-------------------------- Register User into DB with client --------------------------\\
 
-func (connection *MongoDb) DBregister(username string, password string, number string, email string, fname string, lname string) {
+func (connection *MongoDb) DBregister(userInfo *models.RegisterRequest) {
 	db := connection.Client.Database("P2P")
 	coll := db.Collection("Users")
-	docs := bson.M{"_id": email, "Username": username, "Password": password, "Number": number, "Email": email,
-		"fname": fname, "lname": lname}
+	docs := bson.M{"_id": userInfo.Email, "Username": userInfo.Username, "Password": userInfo.UserPassword, "Number": userInfo.Number, "Email": userInfo.Email,
+		"fname": userInfo.FirstName, "lname": userInfo.LastName, "Token": userInfo.Token}
 	result, err := coll.InsertOne(context.TODO(), docs)
 	if err != nil {
 		fmt.Println(err)
