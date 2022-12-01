@@ -27,7 +27,7 @@ const docTemplate = `{
     "paths": {
         "/UserRegister": {
             "post": {
-                "description": "Add Account with JSON Body",
+                "description": "Add Account to Database with JSON Body",
                 "consumes": [
                     "application/json"
                 ],
@@ -37,11 +37,11 @@ const docTemplate = `{
                 "tags": [
                     "accounts"
                 ],
-                "summary": "Add an account",
+                "summary": "Add Account to Database with JSON Body",
                 "parameters": [
                     {
-                        "description": "Add account",
-                        "name": "account",
+                        "description": "User Register JSON Body",
+                        "name": "RegisterRequest Model",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -77,11 +77,12 @@ const docTemplate = `{
                 }
             }
         },
-        "/testing": {
+	"/UserLogin?{Username}&{Password}": {
             "get": {
-                "description": "get string by ID",
+                "description": "User Login with Token as Response",
                 "consumes": [
-                    "application/json"
+                    "application/json",
+					"application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -89,13 +90,20 @@ const docTemplate = `{
                 "tags": [
                     "accounts"
                 ],
-                "summary": "Show an account",
+                "summary": "User Login with Token as Response",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Account ID",
-                        "name": "id",
-                        "in": "path",
+                       {
+                        "type": "string",
+                        "description": "Users Username",
+                        "name": "Username",
+                        "in": "Params",
+                        "required": true
+                    },
+					{
+                        "type": "string",
+                        "description": "Users Password",
+                        "name": "Password",
+                        "in": "Params",
                         "required": true
                     }
                 ],
@@ -103,7 +111,57 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Account"
+                            "$ref": "#/definitions/model.LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/userFiles?{Token}": {
+            "get": {
+                "description": "Get all Users Files with Token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Get all Users Files with Token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Token",
+                        "name": "Token",
+                        "in": "Params",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AddResponse"
                         }
                     },
                     "400": {
@@ -127,7 +185,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete by account ID",
+                "description": "Delete file with Token and FileID",
                 "consumes": [
                     "application/json"
                 ],
@@ -135,9 +193,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "file"
                 ],
-                "summary": "Delete an account",
+                "summary": "NOT FINISHED",
                 "parameters": [
                     {
                         "type": "integer",
@@ -175,69 +233,13 @@ const docTemplate = `{
                     }
                 }
             },
-            "patch": {
-                "description": "Update by json account",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "accounts"
-                ],
-                "summary": "Update an account",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Account ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update account",
-                        "name": "account",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.UpdateAccount"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Account"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    }
-                }
-            }
         },
         "/fileAdd": {
             "post": {
-                "description": "get admin info",
+                "description": "Add File to Database",
                 "consumes": [
-                    "multipart/form-data"
+					"application/x-www-form-urlencoded",
+					"application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -245,7 +247,7 @@ const docTemplate = `{
                 "tags": [
                     "file"
                 ],
-                "summary": "Auth admin",
+                "summary": "Add File to Database",
 				"parameters": [
                     {
                         "type": "Any File Type",
@@ -254,6 +256,13 @@ const docTemplate = `{
                         "in": "path",
                         "required": true
                     },
+					{
+						"type": "string",
+						"description": "File Owner Token",
+						"name ": "Token",
+						"in": "query params",
+						"required": true
+					}
                 ],
                 "responses": {
                     "200": {
@@ -289,498 +298,49 @@ const docTemplate = `{
                 }
             }
         },
-        "/bottles": {
-            "get": {
-                "description": "get bottles",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "bottles"
-                ],
-                "summary": "List bottles",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Bottle"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/bottles/{id}": {
-            "get": {
-                "description": "get string by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "bottles"
-                ],
-                "summary": "Show a bottle",
-                "operationId": "get-string-by-int",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Bottle ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Bottle"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/examples/attribute": {
-            "get": {
-                "description": "attribute",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "example"
-                ],
-                "summary": "attribute example",
-                "parameters": [
-                    {
-                        "enum": [
-                            "A",
-                            "B",
-                            "C"
-                        ],
-                        "type": "string",
-                        "description": "string enums",
-                        "name": "enumstring",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "description": "int enums",
-                        "name": "enumint",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1.1,
-                            1.2,
-                            1.3
-                        ],
-                        "type": "number",
-                        "description": "int enums",
-                        "name": "enumnumber",
-                        "in": "query"
-                    },
-                    {
-                        "maxLength": 10,
-                        "minLength": 5,
-                        "type": "string",
-                        "description": "string valid",
-                        "name": "string",
-                        "in": "query"
-                    },
-                    {
-                        "maximum": 10,
-                        "minimum": 1,
-                        "type": "integer",
-                        "description": "int valid",
-                        "name": "int",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "A",
-                        "description": "string default",
-                        "name": "default",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "answer",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/examples/calc": {
-            "get": {
-                "description": "plus",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "example"
-                ],
-                "summary": "calc example",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "used for calc",
-                        "name": "val1",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "used for calc",
-                        "name": "val2",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "answer",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    "400": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/examples/groups/{group_id}/accounts/{account_id}": {
-            "get": {
-                "description": "path params",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "example"
-                ],
-                "summary": "path params example",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Group ID",
-                        "name": "group_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Account ID",
-                        "name": "account_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "answer",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/examples/header": {
-            "get": {
-                "description": "custome header",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "example"
-                ],
-                "summary": "custome header example",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authentication header",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "answer",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/examples/ping": {
-            "get": {
-                "description": "do ping",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "example"
-                ],
-                "summary": "ping example",
-                "responses": {
-                    "200": {
-                        "description": "pong",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/examples/post": {
+		"/Peers": {
             "post": {
-                "description": "post request example",
+                "description": "Check Number of Peers",
                 "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "text/plain"
-                ],
-                "summary": "post request example",
-                "parameters": [
-                    {
-                        "description": "Account Info",
-                        "name": "message",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Account"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "fail",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/examples/securities": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuth2Implicit": [
-                            "admin",
-                            "write"
-                        ]
-                    }
-                ],
-                "description": "custome header",
-                "consumes": [
-                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "example"
+                    "Status"
                 ],
-                "summary": "custome header example",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authentication header",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
+                "summary": "Check Number of Peers",
+				"parameters": [
                 ],
                 "responses": {
                     "200": {
-                        "description": "answer",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.PeersResponse"
                         }
                     },
                     "400": {
-                        "description": "ok",
+                        "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
                         }
                     },
                     "404": {
-                        "description": "ok",
+                        "description": "Not Found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/httputil.HTTPError"
                         }
                     },
                     "500": {
-                        "description": "ok",
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/httputil.HTTPError"
                         }
                     }
                 }
@@ -839,6 +399,39 @@ const docTemplate = `{
                 }
             }
         },
+		"model.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "Status": {
+                    "Token": "string",
+                    "example": "Users UUID Token"
+                }
+            }
+        },
+		"model.UserFileResponse": {
+            "type": "object",
+            "properties": {
+                "Status": {
+                    "type": "Files[]",
+                    "example": "  
+						Hash  :  QmWq8NAgs8r8dTL2TweyacauF9wuUdHjDh9SuwrK5VpYdL
+						Name  :  Test.pdf
+						Size  :  1394 
+						Link  :  https://ipfs.io/ipfs/QmWq8NAgs8r8dTL2TweyacauF9wuUdHjDh9SuwrK5VpYde 
+						Owner :  0x5b38Da
+					"
+                }
+            }
+        },
+		"model.PeersResponse": {
+					"type": "object",
+					"properties": {
+						"Peers": {
+							"type": "Int",
+							"example": "230"
+						}
+					}
+				},
 		"model.AddResponse": {
 					"type": "object",
 					"properties": {
@@ -865,6 +458,7 @@ const docTemplate = `{
 					}
 				},
     },
+
     "securityDefinitions": {
         "ApiKeyAuth": {
             "type": "apiKey",

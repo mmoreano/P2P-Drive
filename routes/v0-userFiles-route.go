@@ -11,7 +11,7 @@ var files models.UserFileResponse
 
 func UserFiles(c *fiber.Ctx) error {
 	//Fetching query params
-	arg := c.Query("owner")
+	arg := c.Query("Token")
 	files := Connection().GetUserFiles(arg)
 
 	jsonData, err := json.Marshal(files)

@@ -25,8 +25,8 @@ var response models.AddResponse
 func Add(c *fiber.Ctx) error {
 
 	// Getting form data from request
-	owner := c.Query("owner")
-	file, err := c.FormFile("file")
+	owner := c.Query("Token")
+	file, err := c.FormFile("File")
 	if err != nil {
 		os.Exit(0)
 	}
@@ -89,7 +89,6 @@ func Add(c *fiber.Ctx) error {
 
 	response.Link = data
 	response.Owner = owner
-	// ^^^^^^ This will be replaced with the user's email address from the response
 
 	//Upload model to DB
 	Connection().DBupload(response)
