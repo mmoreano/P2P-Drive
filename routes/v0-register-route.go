@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	models "zendx.io/P2P-Drive/models"
 )
 
@@ -24,10 +23,6 @@ func UserRegister(c *fiber.Ctx) error {
 	Database := Connection()
 
 	val := Database.DBemailCheck(userRegister.Email)
-
-	userRegister.Token = uuid.New().String()
-
-	userRegister.UserPassword = string(encrypt([]byte(userRegister.Username+userRegister.UserPassword), userRegister.Token[:32]))
 
 	if val == "Not Found" {
 		Database.DBregister(&userRegister)
