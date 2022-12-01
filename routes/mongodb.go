@@ -51,7 +51,7 @@ func (connection *MongoDb) DBregister(userInfo *models.RegisterRequest) {
 	//userInfo.UserPassword = string(encrypt([]byte(userInfo.Username+userInfo.UserPassword), userInfo.Token[:32]))
 	userInfo.UserPassword = GetMD5Hash(userInfo.Username + userInfo.UserPassword)
 
-	docs := bson.M{"_id": userInfo.Email, "Username": userInfo.Username, "Password": userInfo.UserPassword, "Number": userInfo.Number, "Email": userInfo.Email,
+	docs := bson.M{"_id": userInfo.Email, "Username": userInfo.Username, "UserPassword": userInfo.UserPassword, "Number": userInfo.Number, "Email": userInfo.Email,
 		"Fname": userInfo.FirstName, "Lname": userInfo.LastName, "Token": userInfo.Token}
 	result, err := coll.InsertOne(context.TODO(), docs)
 	if err != nil {
@@ -59,6 +59,9 @@ func (connection *MongoDb) DBregister(userInfo *models.RegisterRequest) {
 	}
 	fmt.Printf("Inserted document with ID %v\n", result.InsertedID)
 }
+
+// -------------------------- Check If Email in DB --------------------------\\
+
 func (connection *MongoDb) DBemailCheck(email string) string {
 	var info models.RegisterRequest
 
@@ -89,37 +92,6 @@ func (connection *MongoDb) DBemailCheck(email string) string {
 	}
 }
 
-//-------------------------- Register User into DB with client --------------------------\\
-//
-//func (connection *MongoDb) DBpassCheck(password string) string {
-//
-//	db := connection.Client.Database("P2P") //Set Database
-//	coll := db.Collection("Users")          //Set Collection
-//	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-//	fmt.Println("Retreiving information...")
-//	filter := bson.M{"Password": password} //Set Filter
-//	//filter := bson.M{"Email": email}
-//
-//	i, err := coll.Find(context.TODO(), filter)
-//	if err != nil {
-//		return "Found"
-//	}
-//	for i.Next(context.TODO()) {
-//		var result models.RegisterRequest
-//		if err := i.Decode(&result); err != nil {
-//			panic(err)
-//		}
-//		info.Email = result.Email
-//	}
-//	fmt.Println("Successfully Retrieved")
-//	print(info.Email)
-//	if info.Email == "" {
-//		return "Not Found"
-//	} else {
-//		return "Found"
-//	}
-//}
-
 // -------------------------- Get User Token from DB with client --------------------------\\
 
 func (connection *MongoDb) Login(user *models.LoginRequest) string {
@@ -128,6 +100,7 @@ func (connection *MongoDb) Login(user *models.LoginRequest) string {
 	var result models.RegisterRequest
 
 	fmt.Println("Retreiving information...")
+
 	filter := bson.M{"Username": user.Username}
 
 	err := coll.FindOne(context.TODO(), filter).Decode(&result)
@@ -135,16 +108,11 @@ func (connection *MongoDb) Login(user *models.LoginRequest) string {
 		panic(err)
 	}
 
-	pass := string(encrypt([]byte(user.Username+user.UserPassword), result.Token[:32]))
+	pass := GetMD5Hash(user.Username + user.UserPassword)
 
-	fmt.Println("1")
-	fmt.Println(pass)
-	fmt.Println("2")
-	//fmt.Println(user.UserPassword)
-	fmt.Println(result)
 	fmt.Println("Successfully Retrieved")
 
-	if user.UserPassword == pass {
+	if result.UserPassword == pass {
 		return result.Token
 	} else {
 		return "Incorrect Password"
