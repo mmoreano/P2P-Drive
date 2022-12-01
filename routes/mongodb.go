@@ -146,6 +146,7 @@ func (connection *MongoDb) GetUserFiles(owner string) []models.AddResponse {
 		files = append(files, result)
 
 	}
+
 	fmt.Println("Successfully Retrieved")
 	return files
 }

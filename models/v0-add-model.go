@@ -5,6 +5,7 @@ import "mime/multipart"
 // AddRequest example
 type AddRequest struct {
 	Id           string                //`form:"id" binding:"required"`
+	Owner        string                `json:"owner" binding:"required"`
 	FileReceived *multipart.FileHeader `form:"file" binding:"required"`
 }
 

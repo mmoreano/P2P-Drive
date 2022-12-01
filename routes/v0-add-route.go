@@ -25,6 +25,7 @@ var response models.AddResponse
 func Add(c *fiber.Ctx) error {
 
 	// Getting form data from request
+	owner := c.Query("owner")
 	file, err := c.FormFile("file")
 	if err != nil {
 		os.Exit(0)
@@ -32,7 +33,6 @@ func Add(c *fiber.Ctx) error {
 
 	request.FileReceived = file
 	request.Id = file.Filename
-
 	//Utilizing IPFS node API
 	url := "http://127.0.0.1:5001/api/v0/add"
 	method := "POST"
@@ -88,7 +88,7 @@ func Add(c *fiber.Ctx) error {
 	fmt.Println(string(body))
 
 	response.Link = data
-	response.Owner = "dom@hotmail.com"
+	response.Owner = owner
 	// ^^^^^^ This will be replaced with the user's email address from the response
 
 	//Upload model to DB
