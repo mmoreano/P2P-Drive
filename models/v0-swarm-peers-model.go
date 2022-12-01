@@ -3,7 +3,6 @@ package models
 // SwarmPeersResponse example
 type SwarmPeersResponse struct {
 	Peers []peer `json:"Peers"`
-	Test  string
 }
 
 type peer struct {

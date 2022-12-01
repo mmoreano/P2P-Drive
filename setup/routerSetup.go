@@ -19,5 +19,6 @@ func LaunchEndpoints(api *fiber.App) {
 	api.Get("/userFiles", routes.UserFiles)
 	api.Post("/userRegister", routes.UserRegister)
 	api.Get("/userLogin", routes.UserLogin)
+	api.Get("/peers", routes.Status)
 	api.Get("/swagger/*", swagger.HandlerDefault)
 }
