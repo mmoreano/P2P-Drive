@@ -16,7 +16,7 @@ func main() {
 	//setup.LaunchEndpoints(api)
 	//api.Listen(":8083")
 
-	testy := models.RegisterRequest{"Dom", "test", "3058332495", "tester@gmail.com", "Dominick", "Diaz", ""}
+	testy := models.RegisterRequest{"Dom", "test", "3058332495", "teesteer@gmail.com", "Dominick", "Diaz", ""}
 	routes.Connection().DBregister(&testy)
 
 	//user := models.LoginRequest{"Dom", "test"}
