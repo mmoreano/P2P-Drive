@@ -1,18 +1,18 @@
 package routes
 
 import (
-	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	models "zendx.io/P2P-Drive/models"
 )
 
-var userLogin models.RegisterRequest
+var userLogin models.LoginRequest
 
 // -------------------------- Login User --------------------------\\
 
 func UserLogin(c *fiber.Ctx) error {
 
-	json.Unmarshal(c.Body(), &userLogin)
+	userLogin.Username = c.Query("Username")
+	userLogin.UserPassword = c.Query("Password")
 
 	//fmt.Print(user)
 
@@ -20,13 +20,12 @@ func UserLogin(c *fiber.Ctx) error {
 
 	Database := Connection()
 
-	token := Database.DBemailCheck(userLogin.Email)
+	token := Database.Login(&userLogin)
 
-	if token == "Not Found" {
-		Database.DBregister(&userLogin)
-		return c.JSON(userLogin)
+	if token == "Incorrect Password" {
+		return c.JSON("ERROR")
 
 	} else {
-		return c.SendString("Account with email exists")
+		return c.SendString(token)
 	}
 }

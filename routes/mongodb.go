@@ -2,7 +2,10 @@ package routes
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -10,6 +13,11 @@ import (
 	"time"
 	"zendx.io/P2P-Drive/models"
 )
+
+func GetMD5Hash(text string) string {
+	hash := md5.Sum([]byte(text))
+	return hex.EncodeToString(hash[:])
+}
 
 // Model for storting database client and is used for closing connection.
 type MongoDb struct {
@@ -39,14 +47,21 @@ func Connection() *MongoDb {
 func (connection *MongoDb) DBregister(userInfo *models.RegisterRequest) {
 	db := connection.Client.Database("P2P")
 	coll := db.Collection("Users")
-	docs := bson.M{"_id": userInfo.Email, "Username": userInfo.Username, "Password": userInfo.UserPassword, "Number": userInfo.Number, "Email": userInfo.Email,
-		"fname": userInfo.FirstName, "lname": userInfo.LastName, "Token": userInfo.Token}
+	userInfo.Token = uuid.New().String()
+	//userInfo.UserPassword = string(encrypt([]byte(userInfo.Username+userInfo.UserPassword), userInfo.Token[:32]))
+	userInfo.UserPassword = GetMD5Hash(userInfo.Username + userInfo.UserPassword)
+
+	docs := bson.M{"_id": userInfo.Email, "Username": userInfo.Username, "UserPassword": userInfo.UserPassword, "Number": userInfo.Number, "Email": userInfo.Email,
+		"Fname": userInfo.FirstName, "Lname": userInfo.LastName, "Token": userInfo.Token}
 	result, err := coll.InsertOne(context.TODO(), docs)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("inserted document with ID %v\n", result.InsertedID)
+	fmt.Printf("Inserted document with ID %v\n", result.InsertedID)
 }
+
+// -------------------------- Check If Email in DB --------------------------\\
+
 func (connection *MongoDb) DBemailCheck(email string) string {
 	var info models.RegisterRequest
 
@@ -74,6 +89,33 @@ func (connection *MongoDb) DBemailCheck(email string) string {
 		return "Not Found"
 	} else {
 		return "Found"
+	}
+}
+
+// -------------------------- Get User Token from DB with client --------------------------\\
+
+func (connection *MongoDb) Login(user *models.LoginRequest) string {
+	db := connection.Client.Database("P2P")
+	coll := db.Collection("Users")
+	var result models.RegisterRequest
+
+	fmt.Println("Retreiving information...")
+
+	filter := bson.M{"Username": user.Username}
+
+	err := coll.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		panic(err)
+	}
+
+	pass := GetMD5Hash(user.Username + user.UserPassword)
+
+	fmt.Println("Successfully Retrieved")
+
+	if result.UserPassword == pass {
+		return result.Token
+	} else {
+		return "Incorrect Password"
 	}
 }
 
